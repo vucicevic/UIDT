@@ -1,93 +1,13 @@
-theory UIDT
-  imports Complex_Main "HOL-Library.Code_Target_Nat"
+theory Second
+  imports Complex_Main 
 begin
-
-text \<open>
-  Prvi seminarski
-  
-  https://imomath.com/srb/zadaci/2018_bmo_shortlist.pdf , zadatak A3
-------------------------------------------------------------------      
-  Pokazati da za svaki pozitivan int n važi :
-             k
-     (2n+1-k)    n
-  \<Sum> (------) \<le> 2   , k \<in> {0..n}   
-     ( k+1  )
-------------------------------------------------------------------
-  Ideja dokaza :
-    
-    - za svaki član sume pokažemo da je manji ili jednak binomnom 
-      koeficijentu za odgovarajuće n i k
-    
-    - kada originalne članove sume zamenimo odgovarajućim binomnim
-      koeficijentima, dobijemo sumu binomnih za koju znamo da je jednaka 
-      2^n pa dokaz sledi direktno    
-\<close>
-
-
-
-(*  Definišemo faktorijel primitivnom rekurzijom  *)
-primrec fact :: "nat \<Rightarrow> nat" where
-   "fact 0 = 1"
-|  "fact (Suc n) = fact n * (Suc n)"
-
-value "fact 4"
-
-(*  Definišemo binomni koeficijent za odgovarajuće n i k  *)
-definition binom_koef :: "nat \<Rightarrow> nat \<Rightarrow> nat" where 
-  "binom_koef n k = fact n div (fact k * fact (n-k))"
-
-value "binom_koef 5 2" 
-
-(*  Dokazujemo jednu od osobina binomnih koeficijenata  *)
-lemma simetrija_binomnih [simp]:
-  fixes n k :: nat
-  assumes "n \<ge> k"
-  shows "binom_koef n k = binom_koef n (n-k)"
-  using assms
-  unfolding binom_koef_def
-  by (simp add: mult.commute)
-
-(*  Dokazujemo sumu binomnih koeficijenata  *)
-lemma suma_binomnih [simp]:
-  fixes n :: nat
-  shows "\<forall>n.(\<Sum> k \<in> {0..n} . binom_koef n k) = 2^n"
-  by simp
- 
-(*  Dokazujemo pomoćnu lemu, koja je srž dokaza glavne leme  *)
-lemma pomocna_lema [simp]:
-  fixes n :: nat
-  shows "\<forall>k \<in> {0..n}. (binom_koef n k \<ge> ((2*n+1-k) / (k+1))^k)"
-  by simp
-  
-(*  Dokazujemo glavnu lemu  *)
-lemma glavna_lema:
-  fixes n :: int
-  assumes "n > 0"
-  shows "\<forall>n. (\<Sum> k \<in> {0..n}. ((2*n+1-k) / (k+1))^k ) \<le> 2^n"
-  using assms
-  using pomocna_lema
-  by simp
-
-
-text \<open>
-  Isabelle može dokazati ovo i bez ikakvih dodatnih tvrđenja, formulisanjem
-  glavne leme i pozivanjem automatskog dokazivača metis.
-  lemma
-    fixes n :: int
-    assumes "n>0"
-    shows "\<forall>n. (\<Sum> k \<in> {0..n}. ((2*n+1-k) / (k+1))^k ) \<le> 2^n"
-    using assms
-    by metis
-\<close>
-
-
 
 text \<open>
   Drugi seminarski
   
   https://www.imo-official.org/problems/IMO2009SL.pdf , zadatak A2
 ------------------------------------------------------------------      
-  Pokazati da za pozitivne realne brojeve a,b,c koji ispunjavaju uslov 1/a + 1/b + 1/c = a + b + c važi :
+  Let a, b, c be positive real numbers such that 1/a + 1/b + 1/c = a + b + c. Prove that:
  
           1                   1                     1           3
     --------------   +  --------------   +   --------------  \<le> ---
@@ -133,7 +53,7 @@ proof-
   have "(2*x + y + z)^2 \<ge> (2*sqrt((x + y)*(x + z)))^2"
     using assms(1) assms(2) assms(3)
     using 1
-    by (smt mult_nonneg_nonneg power_mono real_sqrt_ge_0_iff)
+    by (smt (verit, ccfv_SIG) power_mono real_sqrt_ge_0_iff zero_le_mult_iff)
   then have "(2*x + y + z)^2 \<ge> 4*(x + y)*(x + z)"
     using assms(1) assms(2) assms(3)
     by (simp add: distrib_right)
@@ -383,14 +303,11 @@ proof-
 
   have " (((x + y + z)*(x*y + y*z + z*x))/((x + y)*(y + z)*(z + x))) * ((x*y + y*z + z*x)/(x*y*z*(x + y + z))) * ((x*y*z*(x + y + z))/((x*y + y*z + z*x)^2))
        \<le> 9/8 * ((x*y + y*z + z*x)/(x*y*z*(x + y + z))) * ((x*y*z*(x + y + z))/((x*y + y*z + z*x)^2))"
-    using 1 11 22 33
-    using assms(1) assms(2) assms(3)
-    using real_mult_le_cancel_iff1 
-    by blast
+    using 1 22 33
+    by (metis mult_le_cancel_right mult_less_0_iff not_square_less_zero)
   also have " ...  \<le> 9/8 * 1 * ((x*y*z*(x + y + z))/((x*y + y*z + z*x)^2))"
-    using 2 11 22 33
-    using assms(1) assms(2) assms(3)
-    by (metis divide_nonneg_nonneg mult_left_mono real_mult_le_cancel_iff1 zero_le_numeral)
+    using 1 11 2 33
+    by (metis add_mono_thms_linordered_semiring(1) le_add_same_cancel1 less_imp_le mult_le_cancel_right mult_left_mono not_less)
   also have " ... \<le> 9/8 * 1 * 1/3"
     using 3 11 22 33
     using assms(1) assms(2) assms(3)
