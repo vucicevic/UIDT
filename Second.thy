@@ -3,9 +3,9 @@ theory Second
 begin
 
 text \<open>
-  Drugi seminarski
+  Second task :
   
-  https://www.imo-official.org/problems/IMO2009SL.pdf , zadatak A2
+  https://www.imo-official.org/problems/IMO2009SL.pdf , problem A2
 ------------------------------------------------------------------      
   Let a, b, c be positive real numbers such that 1/a + 1/b + 1/c = a + b + c. Prove that:
  
@@ -13,19 +13,19 @@ text \<open>
     --------------   +  --------------   +   --------------  \<le> ---
     (2a + b + c)^2      (2b + c + a)^2       (2c + a + b)^2     16
 ------------------------------------------------------------------
-  Ideja dokaza :
+  Idea for solving :
     
-    - primenom lema AG_2 i nejednakost transformisaćemo levu stranu
-      do oblika 1/2 * izraz
+    - using AM_GM_2 and inequality_1  we can transform left side to : 
+      1/2 * expression
     
-    - izraz = razlomak_1 * razlomak_2 * razlomak_3, primenom lema
-      k1, k2, k3 u lemi kk dobićemo da je izraz \<le> 3/8, pa imamo 
-      da je leva strana \<le> 1/2 * 3/8 = 3/16
+    - expression = fraction_1 * fraction_2 * fraction_3. Using lemmas
+      L1, L2, L3 in LF we get that expression \<le> 3/8 and then we have
+      left side \<le> 1/2 * 3/8 = 3/16
 \<close>
 
 
-(* AG nejednakost za dva broja *)
-lemma AG_2 [simp]:
+(* AM–GM inequality for two numbers *)
+lemma AM_GM_2 [simp]:
   fixes x y :: real
   assumes "x \<ge> 0" "y \<ge> 0"
   shows "(x + y)/ 2 \<ge> sqrt(x*y)"
@@ -33,16 +33,16 @@ lemma AG_2 [simp]:
   using arith_geo_mean_sqrt 
   by blast
 
-(* Nejednakost koju ćemo koristiti pri
-   transformaciji polaznog izraza      *)
-lemma nejednakost [simp]:
+(* Inequality used in first part 
+    (left side transformation)   *)
+lemma inequality_1 [simp]:
   fixes x y z :: real
   assumes "x > 0" "y > 0" "z > 0"
   shows "1/((2*x + y + z)^2) \<le>  1/(4*(x + y)*(x + z))"
 proof-
 
   have "2 * sqrt ((x + y)*(x + z)) \<le> (x + y) + (x + z)"
-    using AG_2 [of "x + y" "x + z"]
+    using AM_GM_2 [of "x + y" "x + z"]
     using assms(1) assms(2) assms(3) 
     by simp
   also have "... = 2*x + y + z"
@@ -64,9 +64,9 @@ proof-
     .
 qed
 
-(* Iz ove nejednakosti izvlačimo ključnu nejednakost k1, ali svakako moramo da pokažemo
-   da i ona važi *)
-lemma nejednakost_1 [simp]:
+(* This inequality will be used in lemma L1
+       (before using, we must prove it)     *)
+lemma inequality_L1 [simp]:
   fixes x y z :: real
   assumes  "x > 0" "y>0" "z > 0"
   shows "x^2*y + x^2*z + y^2*x + y^2*z + z^2*x + z^2*y \<ge> 6*x*y*z"
@@ -91,8 +91,8 @@ proof-
     by simp
 qed
 
-(* Jedna od ključnih nejednakosti koju ćemo primeniti u lemi kk *)
-lemma k1 [simp]:
+(* Key lemma used in final lemma LF *)
+lemma L1 [simp]:
  fixes x y z :: real
  assumes  "x > 0" "y>0" "z > 0"
  assumes "x^2*y + x^2*z + y^2*x + y^2*z + z^2*x + z^2*y \<ge> 6*x*y*z"
@@ -144,8 +144,8 @@ proof-
     by (metis (no_types, hide_lams) ab_semigroup_mult_class.mult_ac(1) mult_le_cancel_right)
 qed
 
-(* Jedna od ključnih nejednakosti koju ćemo primeniti u lemi kk *)
-lemma k2 [simp]:
+(* Key lemma used in final lemma LF *)
+lemma L2 [simp]:
   fixes x y z :: real
   assumes "x > 0" "y > 0" "z > 0" 
   assumes "1/x + 1/y + 1/z = x + y + z"
@@ -170,14 +170,14 @@ proof-
     .
 qed
 
-(* Pomoćna nejednakost koja nam služi za formiranje nejednakosti 3_1 *)
-lemma nejednakost_3 [simp]:
+(* This inequality will help us form inequality_L3 *)
+lemma inequality_2 [simp]:
   fixes x y z :: real
   assumes "x > 0" "y > 0" "z > 0"
   shows "x^2*y^2 + x^2*z^2 \<ge> 2*x^2*y*z"
 proof-
   have "(x^2*y^2 + x^2*z^2)/2 \<ge> sqrt(x^2*y^2 * x^2*z^2)"
-    using AG_2[of "x^2*y^2" "x^2*z^2"]
+    using AM_GM_2[of "x^2*y^2" "x^2*z^2"]
     using assms
     by (simp add: mult.assoc)
   then have "(x^2*y^2 + x^2*z^2) \<ge> 2*sqrt(x^2*y^2 * x^2*z^2)"
@@ -192,9 +192,9 @@ proof-
     by simp
 qed
 
-(* Iz ove nejednakosti izvlačimo ključnu nejednakost k3, ali svakako moramo da pokažemo
-   da i ona važi *)
-lemma nejednakost_3_1 [simp]:
+(* This inequality will be used in lemma L3
+       (before using, we must prove it)     *)
+lemma inequality_L3 [simp]:
   fixes x y z :: real
   assumes "x > 0" "y > 0" "z > 0"
   shows "x^2*y^2 + y^2*z^2 + z^2*x^2 \<ge> x^2*y*z + x*y^2*z + x*y*z^2"
@@ -221,8 +221,8 @@ proof-
     by (simp add: mult.commute)
 qed
 
-(* Jedna od ključnih nejednakosti koju ćemo primeniti u lemi kk *)
-lemma k3 [simp]:
+(* Key lemma used in final lemma LF *)
+lemma L3 [simp]:
   fixes x y z :: real
   assumes "x > 0" "y > 0" "z > 0"
   assumes "x^2*y^2 + y^2*z^2 + z^2*x^2 \<ge> x^2*y*z + x*y^2*z + x*y*z^2"
@@ -265,9 +265,9 @@ proof-
     .
 qed
 
-(* Nejednakost koja će biti primenjena na izraz u glavnoj lemi 
-            (kombinacija svih ključnih nejednakosti)           *)
-lemma kk:
+(*        Final lemma 
+  (showing that expression \<le> 3/8) *)
+lemma LF:
   fixes x y z :: real
   assumes "x > 0" "y > 0" "z > 0" 
   assumes "1/x + 1/y + 1/z = x + y + z"
@@ -280,7 +280,7 @@ proof-
 
   have 1 : "((x + y + z)*(x*y + y*z + z*x))/((x + y)*(y + z)*(z + x)) \<le> 9/8"
     using assms(1) assms(2) assms(3)
-    using k1
+    using L1
     by simp
 
   have 22 : "(x*y + y*z + z*x)/(x*y*z*(x + y + z)) > 0"
@@ -289,7 +289,7 @@ proof-
 
   have 2 : "(x*y + y*z + z*x)/(x*y*z*(x + y + z)) \<le> 1"
     using assms(1) assms(2) assms(3) assms(4)
-    using k2
+    using L2
     by simp
 
   have 33 : "((x*y*z*(x + y + z))/((x*y + y*z + z*x)^2)) > 0"
@@ -298,7 +298,7 @@ proof-
 
   have 3 : "((x*y*z*(x + y + z))/((x*y + y*z + z*x)^2)) \<le> 1/3"
     using assms(1) assms(2) assms(3)
-    using k3
+    using L3
     by simp
 
   have " (((x + y + z)*(x*y + y*z + z*x))/((x + y)*(y + z)*(z + x))) * ((x*y + y*z + z*x)/(x*y*z*(x + y + z))) * ((x*y*z*(x + y + z))/((x*y + y*z + z*x)^2))
@@ -316,16 +316,16 @@ proof-
     by simp
 qed
 
-(* Pomoćna lema *)
-lemma pomocna:
+(* Simple inequality *)
+lemma inequality_3:
   fixes x :: real
   assumes "x > 0" "x \<le> 3/8"
   shows "1/2 * x \<le> 1/2 * 3/8"
   using assms
   by simp
 
-(* Glavna lema *)
-lemma glavna :
+(* Proof *)
+lemma Final :
   fixes a b c :: real
   assumes "a > 0" "b > 0" "c > 0" 
   assumes "1/a + 1/b + 1/c = a + b + c"
@@ -334,17 +334,17 @@ proof-
   
   have 1 : "1/((2*a + b + c)^2) \<le> 1/(4*(a + b)*(a + c))"
     using assms(1) assms(2) assms(3)
-    using nejednakost
+    using inequality_1
     by simp
 
   have 2 : "1/((2*b + c + a)^2) \<le> 1/(4*(b + c)*(b + a))"
     using assms(1) assms(2) assms(3)
-    using nejednakost
+    using inequality_1
     by simp
 
   have 3 : "1/((2*c + a + b)^2) \<le> 1/(4*(c + a)*(c + b))"
     using assms(1) assms(2) assms(3)
-    using nejednakost
+    using inequality_1
     by simp
 
 
@@ -385,7 +385,7 @@ proof-
     by (simp add: power2_eq_square)
   also have  "... = 1/2*(((a + b + c)*(a*b + b*c + c*a))/((a + b)*(b + c)*(c + a))) * ((a*b + b*c + c*a)/(a*b*c*(a + b + c))) * ((a*b*c*(a + b + c))/((a*b + b*c + c*a)^2))"
     by simp
-  finally have pocetak : "(1/(2*a + b + c)^2) + (1/(2*b + c + a)^2) + (1/(2*c + a + b)^2) \<le> 
+  finally have start : "(1/(2*a + b + c)^2) + (1/(2*b + c + a)^2) + (1/(2*c + a + b)^2) \<le> 
         1/2*(((a + b + c)*(a*b + b*c + c*a))/((a + b)*(b + c)*(c + a))) * ((a*b + b*c + c*a)/(a*b*c*(a+b+c))) * ((a*b*c*(a + b + c))/((a*b + b*c + c*a)^2))"
     by simp
 
@@ -411,23 +411,23 @@ proof-
      
   have ** : "(((a + b + c)*(a*b + b*c + c*a))/((a + b)*(b + c)*(c + a))) * ((a*b + b*c + c*a)/(a*b*c*(a + b + c))) * ((a*b*c*(a + b + c))/((a*b + b*c + c*a)^2)) \<le> 3/8"
     using assms(1) assms(2) assms(3) assms(4)
-    using kk
+    using LF
     by simp
 
     
-  have kraj : "1/2* (((a + b + c)*(a*b + b*c + c*a))/((a + b)*(b + c)*(c + a))) * ((a*b + b*c + c*a)/(a*b*c*(a + b + c))) * ((a*b*c*(a + b + c))/((a*b + b*c + c*a)^2)) \<le>
+  have finish : "1/2* (((a + b + c)*(a*b + b*c + c*a))/((a + b)*(b + c)*(c + a))) * ((a*b + b*c + c*a)/(a*b*c*(a + b + c))) * ((a*b*c*(a + b + c))/((a*b + b*c + c*a)^2)) \<le>
         1/2 * 3/8"
     using *
     using **
-    using pomocna[of "(((a + b + c)*(a*b + b*c + c*a))/((a + b)*(b + c)*(c + a))) * ((a*b + b*c + c*a)/(a*b*c*(a + b + c))) * ((a*b*c*(a + b + c))/((a*b + b*c + c*a)^2))"]
+    using inequality_3[of "(((a + b + c)*(a*b + b*c + c*a))/((a + b)*(b + c)*(c + a))) * ((a*b + b*c + c*a)/(a*b*c*(a + b + c))) * ((a*b*c*(a + b + c))/((a*b + b*c + c*a)^2))"]
     by auto
 
   have "(1/(2*a + b + c)^2) + (1/(2*b + c + a)^2) + (1/(2*c + a + b)^2) \<le> 
           1/2*(((a + b + c)*(a*b + b*c + c*a))/((a + b)*(b + c)*(c + a))) * ((a*b + b*c + c*a)/(a*b*c*(a + b + c))) * ((a*b*c*(a + b + c))/((a*b + b*c + c*a)^2))"
-    using pocetak
+    using start
     by simp
   also have "... \<le> 1/2 * 3/8"
-    using kraj
+    using finish
     by simp
   finally show ?thesis
     by simp

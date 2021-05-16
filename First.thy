@@ -58,8 +58,8 @@ lemma lemma_1 [simp]:
   shows "\<forall>k \<in> {0..n}. (binom_coef n k \<ge> ((2*n+1-k) / (k+1))^k)"
   by simp
   
-(*  Final proof  *)
-lemma glavna_lema:
+(*  Proof  *)
+lemma Final:
   fixes n :: int
   assumes "n > 0"
   shows "\<forall>n. (\<Sum> k \<in> {0..n}. ((2*n+1-k) / (k+1))^k ) \<le> 2^n"
